@@ -87,7 +87,7 @@
 
 - (void)createTableView {
     _data = [[FTAccountsManager sharedManager] accounts];
-    _demoAccounts = [[FTAccountsManager sharedManager] demoAccounts];
+    //_demoAccounts = [[FTAccountsManager sharedManager] demoAccounts];
     
     [super createTableView];
     [self.tableView registerForReloadDataOnTranslationChange];
