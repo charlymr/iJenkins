@@ -48,6 +48,7 @@
         _searchBar.text = @"";
         
         _serverObject = [[FTAPIServerDataObject alloc] init];
+        
         if (_selectedView) {
             [_serverObject setViewToLoad:_selectedView];
         }
@@ -266,7 +267,13 @@
     [cell reset];
     
     FTAPIJobDataObject *job = [self jobAtIndexPath:indexPath];
-    if (job.jobDetail.lastBuild.number > 0) {
+    if ([job isKindOfClass:[FTAPIServerDataObject class]]) {
+        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+        [cell.textLabel setText:@"Folder"];
+        return cell;
+    }
+    
+    else if (job.jobDetail.lastBuild.number > 0) {
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
     }
     else {

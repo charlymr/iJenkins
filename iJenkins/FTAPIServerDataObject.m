@@ -62,26 +62,40 @@
     NSMutableArray *jobs = [NSMutableArray array];
     _jobsStats = [NSMutableDictionary dictionary];
     for (NSDictionary *d in arr) {
-        FTAPIJobDataObject *job = [[FTAPIJobDataObject alloc] init];
-        [job processData:d];
-        [jobs addObject:job];
+//        FTAPIServerViewDataObject
+        if ([d[@"_class"] isEqualToString:@"com.cloudbees.hudson.plugins.folder.Folder"]) {
+            
+            FTAPIServerDataObject *job = [[FTAPIServerDataObject alloc] init];
+            [job processData:d];
+            [jobs addObject:job];
+
+        } else {
+            
+            FTAPIJobDataObject *job = [[FTAPIJobDataObject alloc] init];
+            [job processData:d];
+            [jobs addObject:job];
+            
+            if (job.color && ![_jobsStats objectForKey:job.color]) {
+                FTAPIServerStatsDataObject *s = [[FTAPIServerStatsDataObject alloc] init];
+                [s setCount:1];
+                [s setColor:job.color];
+                [s setFullColor:job.fullColor];
+                [s setRealColor:job.realColor];
+                [_jobsStats setValue:s forKey:job.color];
+            }
+            else {
+                FTAPIServerStatsDataObject *s = (FTAPIServerStatsDataObject *)[_jobsStats objectForKey:job.color];
+                s.count++;
+            }
+        }
         
-        if (job.color && ![_jobsStats objectForKey:job.color]) {
-            FTAPIServerStatsDataObject *s = [[FTAPIServerStatsDataObject alloc] init];
-            [s setCount:1];
-            [s setColor:job.color];
-            [s setFullColor:job.fullColor];
-            [s setRealColor:job.realColor];
-            [_jobsStats setValue:s forKey:job.color];
-        }
-        else {
-            FTAPIServerStatsDataObject *s = (FTAPIServerStatsDataObject *)[_jobsStats objectForKey:job.color];
-            s.count++;
-        }
     }
     _jobs = jobs;
 }
 
+- (NSInteger)depth {
+    return 1;
+}
 
 @end
 
